@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,8 +47,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.example.pgonzalezmusicapp.components.MiniPlayer
+import com.example.pgonzalezmusicapp.models.Album
 import com.example.pgonzalezmusicapp.services.AlbumsService
-import com.example.pgonzalezmusicapp.ui.theme.DarkPlayer
 import com.example.pgonzalezmusicapp.ui.theme.PurpleDark
 import com.example.pgonzalezmusicapp.ui.theme.PurpleMid
 import kotlinx.coroutines.Dispatchers
@@ -87,78 +91,129 @@ fun HomeScreen(navController: NavController) {
             CircularProgressIndicator(color = PurpleMid)
         }
     } else {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Contenido scrolleable
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                // Header con degradado
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(PurpleDark, PurpleMid)
+        Column(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(modifier = Modifier.weight(1f)) {
+
+                item {
+                    // Header
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(PurpleDark, PurpleMid)
+                                )
                             )
-                        )
-                        .padding(horizontal = 20.dp, vertical = 28.dp)
-                ) {
-                    Column {
-                        Text(
-                            text = "Good Morning!",
-                            color = Color.White.copy(alpha = 0.85f),
-                            fontSize = 14.sp
-                        )
-                        Text(
-                            text = "Paulina González",
-                            color = Color.White,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                            .padding(horizontal = 20.dp, vertical = 28.dp)
+                    ) {
+                        Column {
+                            Text(
+                                text = "Good Morning!",
+                                color = Color.White.copy(alpha = 0.85f),
+                                fontSize = 14.sp
+                            )
+                            Text(
+                                text = "Paulina González",
+                                color = Color.White,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Albums - LazyRow
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Albums",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "See more",
-                        fontSize = 13.sp,
-                        color = PurpleMid
-                    )
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Albums", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "See more", fontSize = 13.sp, color = PurpleMid)
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(albums) { album ->
+                            AlbumCard(album = album, onClick = {
+                                navController.navigate("detail/${album.id}")
+                            })
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(text = "Recently Played", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        Text(text = "See more", fontSize = 13.sp, color = PurpleMid)
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                items(albums) { album ->
+                    RecentlyPlayedItem(album = album, onClick = {
+                        navController.navigate("detail/${album.id}")
+                    })
+                }
 
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(albums) { album ->
-                        AlbumCard(album = album, onClick = {
-                            navController.navigate("detail/${album.id}")
-                        })
-                    }
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
 
-            // Mini reproductor fijo abajo
             MiniPlayer(album = albums.firstOrNull())
+        }
+    }
+}
+
+@Composable
+fun RecentlyPlayedItem(album: Album, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = album.image,
+                contentDescription = album.title,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = album.title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(
+                    text = "${album.artist} • Popular Song",
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = "More",
+                tint = Color.Gray
+            )
         }
     }
 }
@@ -178,7 +233,6 @@ fun AlbumCard(album: Album, onClick: () -> Unit) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-        // Overlay oscuro
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -188,23 +242,13 @@ fun AlbumCard(album: Album, onClick: () -> Unit) {
                     )
                 )
         )
-        // Texto e ícono
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(12.dp)
         ) {
-            Text(
-                text = album.title,
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
-            Text(
-                text = album.artist,
-                color = Color.White.copy(alpha = 0.8f),
-                fontSize = 12.sp
-            )
+            Text(text = album.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+            Text(text = album.artist, color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
         }
         IconButton(
             onClick = onClick,

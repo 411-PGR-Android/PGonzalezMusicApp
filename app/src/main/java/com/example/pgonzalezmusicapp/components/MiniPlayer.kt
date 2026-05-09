@@ -25,10 +25,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import com.example.pgonzalezmusicapp.models.Album
 import com.example.pgonzalezmusicapp.ui.theme.DarkPlayer
 
 @Composable
-fun MiniPlayer(album: `Album.kt`?) {
+fun MiniPlayer(album: Album?) {
     if (album == null) return
 
     Row(
