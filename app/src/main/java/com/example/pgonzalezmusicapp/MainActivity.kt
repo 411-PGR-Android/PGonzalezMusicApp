@@ -7,6 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.compose.rememberNavController
+import com.example.pgonzalezmusicapp.screens.DetailScreen
+import com.example.pgonzalezmusicapp.screens.HomeScreen
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -19,29 +26,31 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PGonzalezMusicAppTheme {
+                val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    NavHost(
+                        navController = navController,
+                        startDestination = "home",
                         modifier = Modifier.padding(innerPadding)
-                    )
+                    ) {
+                        composable(route = "home") {
+                            HomeScreen(navController = navController)
+                        }
+                        composable(
+                            route = "detail/{id}",
+                            arguments = listOf(
+                                navArgument("id") {
+                                    type = NavType.IntType
+                                    nullable = false
+                                }
+                            )
+                        ) { backStack ->
+                            val id = backStack.arguments?.getInt("id") ?: 0
+                            DetailScreen(id = id, navController = navController)
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PGonzalezMusicAppTheme {
-        Greeting("Android")
     }
 }
