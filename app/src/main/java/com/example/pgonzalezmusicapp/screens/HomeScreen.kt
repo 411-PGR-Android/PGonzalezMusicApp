@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,7 +42,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -91,39 +93,68 @@ fun HomeScreen(navController: NavController) {
             CircularProgressIndicator(color = PurpleMid)
         }
     } else {
-        Column(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF3E5F5))
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color(0xFFF3E5F5))
+            ) {
 
                 item {
-                    // Header
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(PurpleDark, PurpleMid)
-                                )
-                            )
-                            .padding(horizontal = 20.dp, vertical = 28.dp)
+                            .padding(16.dp)
                     ) {
-                        Column {
-                            Text(
-                                text = "Good Morning!",
-                                color = Color.White.copy(alpha = 0.85f),
-                                fontSize = 14.sp
-                            )
-                            Text(
-                                text = "Paulina González",
-                                color = Color.White,
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(PurpleMid, PurpleDark)
+                                    ),
+                                    shape = RoundedCornerShape(20.dp)
+                                )
+                                .padding(horizontal = 20.dp, vertical = 20.dp)
+                        ) {
+                            // Iconos arriba
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Menu,
+                                    contentDescription = "Menu",
+                                    tint = Color.White
+                                )
+                                Icon(
+                                    imageVector = Icons.Filled.Search,
+                                    contentDescription = "Search",
+                                    tint = Color.White
+                                )
+                            }
+                            // Texto abajo
+                            Column(modifier = Modifier.padding(top = 40.dp)) {
+                                Text(
+                                    text = "Good Morning!",
+                                    color = Color.White.copy(alpha = 0.85f),
+                                    fontSize = 14.sp
+                                )
+                                Text(
+                                    text = "Paulina González",
+                                    color = Color.White,
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                     }
                 }
-
                 item {
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -170,7 +201,14 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-            MiniPlayer(album = albums.firstOrNull())
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFF3E5F5))
+                    .padding(top = 4.dp, bottom = 16.dp)
+            ) {
+                MiniPlayer(album = albums.firstOrNull())
+            }
         }
     }
 }
@@ -233,37 +271,49 @@ fun AlbumCard(album: Album, onClick: () -> Unit) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+        // Cuadrito morado abajo
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 8.dp, vertical = 0.dp)
+                .padding(bottom = 8.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(PurpleDark.copy(alpha = 0.55f))
+                .padding(horizontal = 10.dp, vertical = 8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = album.title,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        maxLines = 1
                     )
-                )
-        )
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(12.dp)
-        ) {
-            Text(text = album.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Text(text = album.artist, color = Color.White.copy(alpha = 0.8f), fontSize = 12.sp)
-        }
-        IconButton(
-            onClick = onClick,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(8.dp)
-                .size(36.dp)
-                .background(Color.White.copy(alpha = 0.9f), CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.PlayArrow,
-                contentDescription = "Play",
-                tint = PurpleDark,
-                modifier = Modifier.size(20.dp)
-            )
+                    Text(
+                        text = album.artist,
+                        color = Color.White.copy(alpha = 0.8f),
+                        fontSize = 11.sp
+                    )
+                }
+                IconButton(
+                    onClick = onClick,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(Color.White.copy(alpha = 0.9f), CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.PlayArrow,
+                        contentDescription = "Play",
+                        tint = PurpleDark,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }

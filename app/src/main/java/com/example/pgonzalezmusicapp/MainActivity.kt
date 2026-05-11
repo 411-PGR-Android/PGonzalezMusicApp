@@ -40,12 +40,12 @@ class MainActivity : ComponentActivity() {
                             route = "detail/{id}",
                             arguments = listOf(
                                 navArgument("id") {
-                                    type = NavType.IntType
+                                    type = NavType.StringType
                                     nullable = false
                                 }
                             )
                         ) { backStack ->
-                            val id = backStack.arguments?.getInt("id") ?: 0
+                            val id = backStack.arguments?.getString("id") ?: ""
                             DetailScreen(id = id, navController = navController)
                         }
                     }

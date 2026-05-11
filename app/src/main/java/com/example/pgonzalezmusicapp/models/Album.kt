@@ -3,7 +3,7 @@ package com.example.pgonzalezmusicapp.models
 import java.io.Serializable
 
 data class Album(
-    val id: Int,
+    val id: String,
     val title: String,
     val artist: String,
     val description: String,

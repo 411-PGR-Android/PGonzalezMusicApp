@@ -57,7 +57,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 @Composable
-fun DetailScreen(id: Int, navController: NavController) {
+fun DetailScreen(id: String, navController: NavController) {
     val BASE_URL = "https://musicapi.pjasoft.com/"
     var album by remember { mutableStateOf<Album?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -99,15 +99,23 @@ fun DetailScreen(id: Int, navController: NavController) {
         }
     } else {
         val tracks = (1..10).map { i -> "${album!!.title} • Track $i" }
-
-        Column(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(modifier = Modifier.weight(1f)) {
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFFF3E5F5))
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color(0xFFF3E5F5))
+            ) {
                 item {
-                    // Header con imagen grande y scrim morado
+                    // Header como cajita redondeada
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(16.dp)
+                            .clip(RoundedCornerShape(24.dp))
                             .height(300.dp)
                     ) {
                         AsyncImage(
@@ -241,15 +249,15 @@ fun DetailScreen(id: Int, navController: NavController) {
                                 )
                             },
                             colors = SuggestionChipDefaults.suggestionChipColors(
-                                containerColor = Color(0xFFF3E5F5)
+                                containerColor = Color.White
                             )
                         )
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
 
-                // 10 canciones ficticias
+                // canciones en cards
                 items(tracks) { track ->
                     TrackItem(
                         trackTitle = track,
@@ -263,36 +271,60 @@ fun DetailScreen(id: Int, navController: NavController) {
                 }
             }
 
-            MiniPlayer(album = album)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFFF3E5F5))
+                    .padding(top = 4.dp,bottom = 16.dp)
+            ) {
+                MiniPlayer(album = album)
+            }
         }
     }
 }
 
 @Composable
 fun TrackItem(trackTitle: String, artist: String, image: String) {
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 5.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        AsyncImage(
-            model = image,
-            contentDescription = trackTitle,
-            contentScale = ContentScale.Crop,
+        Row(
             modifier = Modifier
-                .size(48.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = trackTitle, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-            Text(text = artist, fontSize = 12.sp, color = Color.Gray)
+                .fillMaxWidth()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AsyncImage(
+                model = image,
+                contentDescription = trackTitle,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = trackTitle,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                )
+                Text(
+                    text = artist,
+                    fontSize = 12.sp,
+                    color = Color.Gray
+                )
+            }
+            Icon(
+                imageVector = Icons.Filled.MoreVert,
+                contentDescription = "More",
+                tint = Color.Gray
+            )
         }
-        Icon(
-            imageVector = Icons.Filled.MoreVert,
-            contentDescription = "More",
-            tint = Color.Gray
-        )
     }
 }
